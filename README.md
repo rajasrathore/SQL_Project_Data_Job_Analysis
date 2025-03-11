@@ -36,16 +36,16 @@ For my deep dive into the Indian data analyst job market, I harnessed the power 
 - GitLab, Linux, and MySQL are among the highest-paying skills with average salaries of $165,000.
 - Data Architect roles appear multiple times in the top-paying jobs list.
 
-![Top Paying Roles](Asset\TopPayingJobs.png)
+![Top Paying Roles](Asset/TopPayingJobs.png)
 *Graphs visualizing the different datsets; Claude generated this
 graph from my SQL query results*
-![Top Demanded Skills](Asset\TopDemandedSkills.png)
+![Top Demanded Skills](Asset/TopDemandedSkills.png)
 *Graphs visualizing the different datsets; Claude generated this
 graph from my SQL query results*
-![Top Highest Paying Skills](Asset\TopSkills.png)
+![Top Highest Paying Skills](Asset/TopSkills.png)
 *Graphs visualizing the different datsets; Claude generated this
 graph from my SQL query results*
-![Optimal Skills](Asset\OptimalSkills.png)
+![Optimal Skills](Asset/OptimalSkills.png)
 *Graphs visualizing the different datsets; Claude generated this
 graph from my SQL query results*
 
