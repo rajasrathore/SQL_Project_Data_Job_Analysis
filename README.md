@@ -28,6 +28,132 @@ For my deep dive into the Indian data analyst job market, I harnessed the power 
 - **Git & GitHub:** Essential for version control and sharing my SQL scripts and analysis, ensuring collaboration and project tracking.
 
 # The Analysis
+Each query for this project aimed at investigating
+specific aspects of the data analyst job market.
+Here's how I approached each question:
+
+### 1. Top Paying Data Analysts Jobs
+To identify the highest-paying roles I filtered
+data analyst positions by average yearly salary
+and location, focusing on remote jobs. This query
+highlights the high paying opportunities in the
+field.
+```sql
+SELECT
+    job_id,
+    job_title,
+    job_location,
+    job_schedule_type,
+    salary_year_avg,
+    job_posted_date,
+    company_dim.name AS company_name
+FROM
+    job_postings_fact
+LEFT JOIN company_dim ON company_dim.company_id = job_postings_fact.company_id    
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location LIKE '_%India%' AND
+    salary_year_avg IS NOT NULL
+ORDER BY
+    salary_year_avg DESC    
+LIMIT 10    
+```
+
+![Top Paying Roles](Asset/TopPayingJobs.png)
+*Graphs visualizing the datsets; Claude generated this
+graph from my SQL query results*
+
+### 2. Top Demand Skills
+To understand what skills are in demand, i joined the job posting with the skills data to get our demand trends
+```sql
+SELECT
+    skills,
+    COUNT(skills_job_dim.job_id) AS demand_count
+FROM job_postings_fact
+JOIN 
+    skills_job_dim on skills_job_dim.job_id = job_postings_fact.job_id
+JOIN 
+    skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location LIKE '_%India%'   
+GROUP BY
+    skills
+ORDER BY
+    demand_count DESC     
+LIMIT 5       
+```
+
+![Top Demanded Skills](Asset/TopDemandedSkills.png)
+*Graphs visualizing the datsets; Claude generated this
+graph from my SQL query results*
+
+### 3. Skills for Top Paying Jobs
+To understand what skills are required for the top paying jobs, i joined the job posting with the skills data 
+```sql
+WITH top_paying_jobs AS
+(
+    SELECT
+        job_id,
+        job_title,
+        salary_year_avg,
+        company_dim.name AS company_name
+    FROM
+        job_postings_fact
+    LEFT JOIN company_dim ON company_dim.company_id = job_postings_fact.company_id    
+    WHERE
+        job_title_short = 'Data Analyst' AND
+        job_location LIKE '_%India%' AND
+        salary_year_avg IS NOT NULL
+    ORDER BY
+        salary_year_avg DESC    
+    LIMIT 10   
+) 
+
+SELECT 
+    top_paying_jobs.*,
+    skills 
+FROM 
+    top_paying_jobs
+JOIN 
+    skills_job_dim on skills_job_dim.job_id = top_paying_jobs.job_id
+JOIN 
+    skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+```
+![Top Highest Paying Skills](Asset/TopSkills.png)
+*Graphs visualizing the datsets; Claude generated this
+graph from my SQL query results*
+
+### 4. The Most Optimal Skills
+This is all about maximising benefits to looks at skills that are in demand as well as of great value.
+```sql
+SELECT
+    skills_dim.skill_id,
+    skilLs_dim.skills,
+    COUNT(skills_job_dim.job_id) AS demand_count,
+    ROUND(AVG(job_postings_fact.salary_year_avg)) AS avg_salary
+FROM job_postings_fact
+JOIN 
+    skills_job_dim on skills_job_dim.job_id = job_postings_fact.job_id
+JOIN 
+    skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND job_location LIKE '_%India%' 
+    AND
+    salary_year_avg IS NOT NULL
+GROUP BY
+    skills_dim.skill_id
+HAVING
+    COUNT(skills_job_dim.job_id) > 10
+ORDER BY
+    avg_salary DESC, 
+    demand_count DESC
+LIMIT 25
+``` 
+![Optimal Skills](Asset/OptimalSkills.png)
+*Graphs visualizing the datsets; Claude generated this
+graph from my SQL query results*
+
 **Key Analysis Findings**
 
 - The highest paying job is Staff Applied Research Engineer at ServiceNow with an annual salary of $177,283.
@@ -35,19 +161,6 @@ For my deep dive into the Indian data analyst job market, I harnessed the power 
 - The top 3 most valuable skills (combining demand and salary) are SQL, Python, and Excel.
 - GitLab, Linux, and MySQL are among the highest-paying skills with average salaries of $165,000.
 - Data Architect roles appear multiple times in the top-paying jobs list.
-
-![Top Paying Roles](Asset/TopPayingJobs.png)
-*Graphs visualizing the different datsets; Claude generated this
-graph from my SQL query results*
-![Top Demanded Skills](Asset/TopDemandedSkills.png)
-*Graphs visualizing the different datsets; Claude generated this
-graph from my SQL query results*
-![Top Highest Paying Skills](Asset/TopSkills.png)
-*Graphs visualizing the different datsets; Claude generated this
-graph from my SQL query results*
-![Optimal Skills](Asset/OptimalSkills.png)
-*Graphs visualizing the different datsets; Claude generated this
-graph from my SQL query results*
 
 # What I Learned
 
